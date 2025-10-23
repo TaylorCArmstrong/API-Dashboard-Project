@@ -6,13 +6,13 @@ const weatherApi = document.getElementById('weather-api');
 const weatherOutput = document.getElementById('weather-output');
 const currencyApi = document.getElementById('currency-api');
 const currencyOutput = document.getElementById('currency-output');
-const movieApi = document.getElementById('movie-api');
-const movieOutput = document.getElementById('movie-output');
+const movieApi = document.getElementById('movies-api');
+const movieOutput = document.getElementById('movies-output');
 const gitHubApi = document.getElementById('github-api');
 const gitHubOutput = document.getElementById('github-output');
 const jokeApi = document.getElementById('joke-api');
 const jokeOutput = document.getElementById('joke-output');
-const publiicApi = document.getElementById('public-api');
+const publicApi = document.getElementById('public-api');
 const publicOutput = document.getElementById('publicapi-output');
 
 // Function to fetch and display a random dog image
@@ -102,27 +102,30 @@ async function fetchWeatherPhoenix() {
 if (weatherApi) weatherApi.addEventListener('click', fetchWeatherPhoenix);
 
 
-//write me a code to exchange currency using await fetch and display the result in currencyOutput
+//function for the currency exchange API
 async function fetchCurrencyExchange() {
-    // Try to read inputs from the page first
     const fromInput = document.getElementById('from-currency');
     const toInput = document.getElementById('to-currency');
     const amountInput = document.getElementById('amount');
 
-    let fromCurrency = fromInput ? fromInput.value.trim().toUpperCase() : '';
-    let toCurrency = toInput ? toInput.value.trim().toUpperCase() : '';
-    let amount = amountInput ? parseFloat(amountInput.value) : NaN;
-
-    // Fallback to prompts if inputs not present or empty
-    if (!fromCurrency) fromCurrency = (prompt('From currency (e.g. USD)') || 'USD').trim().toUpperCase();
-    if (!toCurrency) toCurrency = (prompt('To currency (e.g. EUR)') || 'EUR').trim().toUpperCase();
-    if (!amount || Number.isNaN(amount)) {
-        const amtStr = prompt('Amount (numeric)', '1') || '1';
-        amount = parseFloat(amtStr);
+    // Validate that all inputs exist and have values
+    if (!fromInput || !toInput || !amountInput) {
+        if (currencyOutput) currencyOutput.innerHTML = 'Currency converter inputs not found.';
+        return;
     }
 
-    if (!fromCurrency || !toCurrency || Number.isNaN(amount)) {
-        if (currencyOutput) currencyOutput.innerHTML = 'Invalid currency or amount.';
+    const fromCurrency = fromInput.value.trim().toUpperCase();
+    const toCurrency = toInput.value.trim().toUpperCase();
+    const amount = parseFloat(amountInput.value);
+
+    // Validate input values
+    if (!fromCurrency || !toCurrency) {
+        if (currencyOutput) currencyOutput.innerHTML = 'Please enter both currencies (e.g., USD, EUR, GBP).';
+        return;
+    }
+    
+    if (!amount || Number.isNaN(amount)) {
+        if (currencyOutput) currencyOutput.innerHTML = 'Please enter a valid amount.';
         return;
     }
 
@@ -153,3 +156,142 @@ function getDogImage() { fetchDogImage(); }
 function getCatImage() { fetchCatImage(); }
 function getWeather() { fetchWeatherPhoenix(); }
 function getExchangeRates() { fetchCurrencyExchange(); }
+
+//function to fetch and display a random movie using tmdb API
+async function fetchRandomMovie() {
+    const apiKey = '35a4d64e9d1a9de5605be34e14009290';
+    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`;
+    try {
+        if (movieOutput) movieOutput.innerHTML = 'Loading random movie...';
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        const movies = json.results;
+        if (!movies || movies.length === 0) throw new Error('No movies found');
+
+        const randomIndex = Math.floor(Math.random() * movies.length);
+        const movie = movies[randomIndex];
+        if (movieOutput) movieOutput.innerHTML = '';
+
+        const h = document.createElement('h3');
+        h.textContent = movie.title;
+        const p = document.createElement('p');
+        p.textContent = movie.overview;
+        movieOutput.appendChild(h);
+        movieOutput.appendChild(p);
+    } catch (err) {
+        console.error('Error fetching random movie', err);
+        if (movieOutput) movieOutput.innerHTML = 'Unable to load random movie. See console for details.';
+    }
+}   
+// Wire the movie button to the function
+if (movieApi) movieApi.addEventListener('click', fetchRandomMovie);
+
+// Inline wrapper used by index.html
+function getMovies() { fetchRandomMovie(); }
+
+
+//function to fetch and display a random joke
+async function fetchRandomJoke() {
+    const url = 'https://official-joke-api.appspot.com/random_joke';
+    try {
+        if (jokeOutput) jokeOutput.innerHTML = 'Loading random joke...';
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        if (jokeOutput) jokeOutput.innerHTML = '';
+
+        const h = document.createElement('h3');
+        h.textContent = json.setup;
+        const p = document.createElement('p');
+        p.textContent = json.punchline;
+        jokeOutput.appendChild(h);
+        jokeOutput.appendChild(p);
+    } catch (err) {
+        console.error('Error fetching random joke', err);
+        if (jokeOutput) jokeOutput.innerHTML = 'Unable to load random joke. See console for details.';
+    }
+}
+// Wire the joke button to the function
+if (jokeApi) jokeApi.addEventListener('click', fetchRandomJoke);    
+
+// Fetch and display a Meowfact (integrates with Meowfacts API)
+async function fetchMeowFact() {
+    const apiUrl = 'https://meowfacts.herokuapp.com/';
+
+    // local fallback facts if the network/API fails
+    const localFacts = [
+        'Cats sleep for 70% of their lives.',
+        'A group of cats is called a clowder.',
+        'Cats have five toes on their front paws, but only four on the back ones.'
+    ];
+
+    try {
+        if (publicOutput) publicOutput.innerHTML = 'Loading a meowfact...';
+        const resp = await fetch(apiUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+
+        // meowfacts returns { data: ["fact..."] }
+        const fact = json && json.data && json.data[0] ? json.data[0] : null;
+        if (!fact) throw new Error('No fact found in response');
+
+        if (publicOutput) publicOutput.innerHTML = '';
+
+        const h = document.createElement('h3');
+        h.textContent = 'Meowfact';
+
+        const p = document.createElement('p');
+        p.textContent = fact;
+
+        const controls = document.createElement('div');
+        controls.style.marginTop = '8px';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy fact';
+        copyBtn.addEventListener('click', async () => {
+            if (navigator.clipboard && fact) {
+                try { await navigator.clipboard.writeText(fact); copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy fact', 1500); } catch (e) { console.warn('Clipboard write failed', e); }
+            }
+        });
+
+        const src = document.createElement('a');
+        src.href = 'https://github.com/wh-iterabb-it/meowfacts';
+        src.target = '_blank';
+        src.rel = 'noopener noreferrer';
+        src.textContent = 'API source';
+        src.style.marginLeft = '12px';
+
+        controls.appendChild(copyBtn);
+        controls.appendChild(src);
+
+        publicOutput.appendChild(h);
+        publicOutput.appendChild(p);
+        publicOutput.appendChild(controls);
+    } catch (err) {
+        console.warn('Meowfacts fetch failed:', err);
+        // Render a local fallback fact
+        if (!publicOutput) return;
+        publicOutput.innerHTML = '';
+        const h = document.createElement('h3');
+        h.textContent = 'Meowfact (offline)';
+        const p = document.createElement('p');
+        p.textContent = localFacts[Math.floor(Math.random() * localFacts.length)];
+        const src = document.createElement('a');
+        src.href = 'https://github.com/wh-iterabb-it/meowfacts';
+        src.target = '_blank';
+        src.rel = 'noopener noreferrer';
+        src.textContent = 'API source';
+
+        publicOutput.appendChild(h);
+        publicOutput.appendChild(p);
+        publicOutput.appendChild(src);
+    }
+}
+
+// Wire the public API button to the Meowfact function
+if (publicApi) publicApi.addEventListener('click', fetchMeowFact);
+// Inline wrappers used by index.html
+function getPublicApis() { fetchMeowFact(); }
+function getPublicApiInfo() { fetchMeowFact(); }
+
