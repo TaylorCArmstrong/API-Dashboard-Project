@@ -69,3 +69,29 @@
       border: 2px solid black;
       border-radius: 10px;
     }
+
+    /* Currency input row */
+    .currency-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+
+    .currency-row label {
+      font-size: 0.9rem;
+    }
+
+    .currency-row input {
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 5rem;
+    }
+
+    .currency-row .symbol {
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+      color: #333;
+    }

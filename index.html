@@ -33,6 +33,20 @@
 
     <section class="grid-item" id="currency-api">
       <h2>💱 Currency Rates</h2>
+
+      <div class="currency-row">
+        <label for="from-currency">From</label>
+        <input id="from-currency" placeholder="USD" maxlength="3" />
+        <span class="symbol">$</span>
+
+        <label for="to-currency">To</label>
+        <input id="to-currency" placeholder="EUR" maxlength="3" />
+        <span class="symbol">€</span>
+
+        <label for="amount">Amount</label>
+        <input id="amount" placeholder="1" type="number" step="any" />
+      </div>
+
       <button onclick="getExchangeRates()">Get Rates</button>
       <div class="output" id="currency-output"></div>
     </section>
