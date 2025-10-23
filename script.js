@@ -16,8 +16,20 @@ const meowApi = document.getElementById('meowfacts');
 const meowOutput = document.getElementById('meowfacts-output');
 
 
+// Helper to show loading spinner
+function showLoading(outputElement, message = 'Loading...') {
+    if (!outputElement) return;
+    outputElement.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div>${message}</div>
+        </div>
+    `;
+}
+
 // Function to fetch and display a random dog image
 async function fetchDogImage() {
+    showLoading(dogOutput, 'Fetching a dog...');
     const response = await fetch('https://dog.ceo/api/breeds/image/random');
     const data = await response.json();
     console.log(data);
@@ -35,6 +47,7 @@ if (dogApi) dogApi.addEventListener('click', fetchDogImage);
 
 //function to fetch and display a random cat image
 async function fetchCatImage() {
+    showLoading(catOutput, 'Fetching a cat...');
     const response = await fetch('https://api.thecatapi.com/v1/images/search');
     const data = await response.json();
     console.log(data);
@@ -64,7 +77,7 @@ async function fetchWeatherPhoenix() {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
 
     try {
-        if (weatherOutput) weatherOutput.innerHTML = 'Loading current weather for Phoenix...';
+        showLoading(weatherOutput, 'Loading current weather for Phoenix...');
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();
@@ -133,7 +146,7 @@ async function fetchCurrencyExchange() {
     const url = `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`;
 
     try {
-        if (currencyOutput) currencyOutput.innerHTML = 'Loading currency exchange rate...';
+        showLoading(currencyOutput, 'Loading currency exchange rate...');
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();
@@ -163,7 +176,7 @@ async function fetchRandomMovie() {
     const apiKey = '35a4d64e9d1a9de5605be34e14009290';
     const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`;
     try {
-        if (movieOutput) movieOutput.innerHTML = 'Loading random movie...';
+        showLoading(movieOutput, 'Loading random movie...');
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();
@@ -194,7 +207,7 @@ function getMovies() { fetchRandomMovie(); }
 // Fetch and display a GitHub user by username. If username is falsy, fall back to random.
 async function fetchGitHubUser(username) {
     try {
-        if (gitHubOutput) gitHubOutput.innerHTML = username ? `Loading ${username}...` : 'Loading a random GitHub user...';
+        showLoading(gitHubOutput, username ? `Loading ${username}...` : 'Loading a random GitHub user...');
 
         let userData = null;
         if (username) {
@@ -266,7 +279,7 @@ if (gitHubApi) gitHubApi.addEventListener('click', () => { const input = documen
 async function fetchRandomJoke() {
     const url = 'https://official-joke-api.appspot.com/random_joke';
     try {
-        if (jokeOutput) jokeOutput.innerHTML = 'Loading random joke...';
+        showLoading(jokeOutput, 'Loading random joke...');
         const resp = await fetch(url);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();
@@ -298,7 +311,7 @@ async function fetchMeowFact() {
     ];
 
     try {
-        if (meowOutput) meowOutput.innerHTML = 'Loading a meowfact...';
+        showLoading(meowOutput, 'Loading a meowfact...');
         const resp = await fetch(apiUrl);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();

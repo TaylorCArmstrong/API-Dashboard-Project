@@ -111,5 +111,31 @@ input::placeholder{color:#9b9b9b}
   .grid-item{border-radius:12px;padding:.75rem}
 }
 
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--primary);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+  margin: 10px auto;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Fun little footer spacing */
 .footer{margin-top:1.5rem;text-align:center;color:#8b7fb0;font-size:.9rem}
