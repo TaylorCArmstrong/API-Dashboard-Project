@@ -59,6 +59,10 @@
 
     <section class="grid-item" id="github-api">
       <h2>🧑‍💻 GitHub User</h2>
+      <div class="github-row">
+        <label for="github-username">Username</label>
+        <input id="github-username" placeholder="octocat" />
+      </div>
       <button onclick="getGitHubUser()">Get User</button>
       <div class="output" id="github-output"></div>
     </section>
@@ -69,10 +73,10 @@
       <div class="output" id="joke-output"></div>
     </section>
 
-    <section class="grid-item" id="public-api">
+    <section class="grid-item" id="meowfacts">
       <h2>😽 MeowFacts</h2>
-      <button onclick="getPublicApiInfo()">Show One</button>
-      <div class="output" id="publicapi-output"></div>
+      <button onclick="getMeowFactsInfo()">Show One</button>
+      <div class="output" id="meowfacts-output"></div>
     </section>
   </div>
 

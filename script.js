@@ -12,8 +12,9 @@ const gitHubApi = document.getElementById('github-api');
 const gitHubOutput = document.getElementById('github-output');
 const jokeApi = document.getElementById('joke-api');
 const jokeOutput = document.getElementById('joke-output');
-const publicApi = document.getElementById('public-api');
-const publicOutput = document.getElementById('publicapi-output');
+const meowApi = document.getElementById('meowfacts');
+const meowOutput = document.getElementById('meowfacts-output');
+
 
 // Function to fetch and display a random dog image
 async function fetchDogImage() {
@@ -190,6 +191,76 @@ if (movieApi) movieApi.addEventListener('click', fetchRandomMovie);
 // Inline wrapper used by index.html
 function getMovies() { fetchRandomMovie(); }
 
+// Fetch and display a GitHub user by username. If username is falsy, fall back to random.
+async function fetchGitHubUser(username) {
+    try {
+        if (gitHubOutput) gitHubOutput.innerHTML = username ? `Loading ${username}...` : 'Loading a random GitHub user...';
+
+        let userData = null;
+        if (username) {
+            const resp = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
+            if (!resp.ok) {
+                if (resp.status === 404) throw new Error('User not found');
+                throw new Error(`HTTP ${resp.status}`);
+            }
+            userData = await resp.json();
+        } else {
+            // fetch list and pick one at random
+            const listResp = await fetch('https://api.github.com/users?since=0&per_page=100');
+            if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
+            const list = await listResp.json();
+            if (!list || list.length === 0) throw new Error('No users found');
+            const randomIndex = Math.floor(Math.random() * list.length);
+            const user = list[randomIndex];
+            // fetch full user data
+            const resp = await fetch(user.url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            userData = await resp.json();
+        }
+
+        if (!userData) throw new Error('No user data');
+
+        if (gitHubOutput) gitHubOutput.innerHTML = '';
+        const h = document.createElement('h3');
+        h.textContent = userData.login;
+
+        const avatar = document.createElement('img');
+        avatar.src = userData.avatar_url;
+        avatar.alt = `${userData.login} avatar`;
+        avatar.style.width = '64px';
+        avatar.style.height = '64px';
+        avatar.style.borderRadius = '6px';
+        avatar.style.display = 'block';
+
+        const p = document.createElement('p');
+        p.innerHTML = `Profile: <a href="${userData.html_url}" target="_blank" rel="noopener noreferrer">${userData.html_url}</a>`;
+
+        const bio = document.createElement('p');
+        bio.textContent = userData.bio || '';
+
+        const stats = document.createElement('p');
+        stats.textContent = `Repos: ${userData.public_repos} • Followers: ${userData.followers} • Following: ${userData.following}`;
+
+        gitHubOutput.appendChild(avatar);
+        gitHubOutput.appendChild(h);
+        gitHubOutput.appendChild(p);
+        gitHubOutput.appendChild(bio);
+        gitHubOutput.appendChild(stats);
+    } catch (err) {
+        console.error('Error fetching GitHub user', err);
+        if (gitHubOutput) gitHubOutput.innerHTML = `Unable to load GitHub user: ${err.message}`;
+    }
+}
+
+// Wrapper that reads the input and calls fetchGitHubUser
+function getGitHubUser() {
+    const input = document.getElementById('github-username');
+    const username = input && input.value.trim() ? input.value.trim() : '';
+    fetchGitHubUser(username);
+}
+
+// Wire the GitHub section click to fetch a random user only if someone clicks the section itself (keeps parity with other items)
+if (gitHubApi) gitHubApi.addEventListener('click', () => { const input = document.getElementById('github-username'); if (!input || !input.value.trim()) fetchGitHubUser(''); });
 
 //function to fetch and display a random joke
 async function fetchRandomJoke() {
@@ -227,7 +298,7 @@ async function fetchMeowFact() {
     ];
 
     try {
-        if (publicOutput) publicOutput.innerHTML = 'Loading a meowfact...';
+        if (meowOutput) meowOutput.innerHTML = 'Loading a meowfact...';
         const resp = await fetch(apiUrl);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const json = await resp.json();
@@ -236,7 +307,7 @@ async function fetchMeowFact() {
         const fact = json && json.data && json.data[0] ? json.data[0] : null;
         if (!fact) throw new Error('No fact found in response');
 
-        if (publicOutput) publicOutput.innerHTML = '';
+        if (meowOutput) meowOutput.innerHTML = '';
 
         const h = document.createElement('h3');
         h.textContent = 'Meowfact';
@@ -265,14 +336,14 @@ async function fetchMeowFact() {
         controls.appendChild(copyBtn);
         controls.appendChild(src);
 
-        publicOutput.appendChild(h);
-        publicOutput.appendChild(p);
-        publicOutput.appendChild(controls);
+        meowOutput.appendChild(h);
+        meowOutput.appendChild(p);
+        meowOutput.appendChild(controls);
     } catch (err) {
         console.warn('Meowfacts fetch failed:', err);
         // Render a local fallback fact
-        if (!publicOutput) return;
-        publicOutput.innerHTML = '';
+        if (!meowOutput) return;
+        meowOutput.innerHTML = '';
         const h = document.createElement('h3');
         h.textContent = 'Meowfact (offline)';
         const p = document.createElement('p');
@@ -283,15 +354,14 @@ async function fetchMeowFact() {
         src.rel = 'noopener noreferrer';
         src.textContent = 'API source';
 
-        publicOutput.appendChild(h);
-        publicOutput.appendChild(p);
-        publicOutput.appendChild(src);
+        meowOutput.appendChild(h);
+        meowOutput.appendChild(p);
+        meowOutput.appendChild(src);
     }
 }
 
-// Wire the public API button to the Meowfact function
-if (publicApi) publicApi.addEventListener('click', fetchMeowFact);
-// Inline wrappers used by index.html
-function getPublicApis() { fetchMeowFact(); }
-function getPublicApiInfo() { fetchMeowFact(); }
+// Wire the Meowfacts button to the Meowfact function
+if (meowApi) meowApi.addEventListener('click', fetchMeowFact);
+// Inline wrapper used by index.html
+function getMeowFactsInfo() { fetchMeowFact(); }
 
