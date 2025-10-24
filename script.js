@@ -42,8 +42,8 @@ async function fetchDogImage() {
     dogOutput.appendChild(img);
 }
 
-// Add event listener to the dog API button
-if (dogApi) dogApi.addEventListener('click', fetchDogImage);
+// Note: inline buttons in the HTML call wrappers (e.g. getDogImage()).
+// We avoid adding section-level click listeners to prevent duplicate calls.
 
 //function to fetch and display a random cat image
 async function fetchCatImage() {
@@ -60,8 +60,7 @@ async function fetchCatImage() {
     catOutput.appendChild(img);
 }
 
-// Add event listener to the cat API button
-if (catApi) catApi.addEventListener('click', fetchCatImage);
+// (cat button uses inline onclick -> getCatImage())
 
 // Placeholder fetchWeather function (kept for compatibility)
 async function fetchWeather() {
@@ -112,8 +111,7 @@ async function fetchWeatherPhoenix() {
     }
 }
 
-// Wire the weather button to Phoenix function
-if (weatherApi) weatherApi.addEventListener('click', fetchWeatherPhoenix);
+// (weather button uses inline onclick -> getWeather())
 
 
 //function for the currency exchange API
@@ -162,14 +160,14 @@ async function fetchCurrencyExchange() {
     }
 }
 
-// Wire the currency button to the function
-if (currencyApi) currencyApi.addEventListener('click', fetchCurrencyExchange);
+// (currency button uses inline onclick -> getExchangeRates())
 
 // Small global wrappers so the inline onclicks in index.html keep working
 function getDogImage() { fetchDogImage(); }
 function getCatImage() { fetchCatImage(); }
 function getWeather() { fetchWeatherPhoenix(); }
 function getExchangeRates() { fetchCurrencyExchange(); }
+function getJoke() { fetchRandomJoke(); }
 
 //function to fetch and display a random movie using tmdb API
 async function fetchRandomMovie() {
@@ -198,8 +196,7 @@ async function fetchRandomMovie() {
         if (movieOutput) movieOutput.innerHTML = 'Unable to load random movie. See console for details.';
     }
 }   
-// Wire the movie button to the function
-if (movieApi) movieApi.addEventListener('click', fetchRandomMovie);
+// (movie button uses inline onclick -> getMovies())
 
 // Inline wrapper used by index.html
 function getMovies() { fetchRandomMovie(); }
@@ -272,8 +269,7 @@ function getGitHubUser() {
     fetchGitHubUser(username);
 }
 
-// Wire the GitHub section click to fetch a random user only if someone clicks the section itself (keeps parity with other items)
-if (gitHubApi) gitHubApi.addEventListener('click', () => { const input = document.getElementById('github-username'); if (!input || !input.value.trim()) fetchGitHubUser(''); });
+// (GitHub button uses inline onclick -> getGitHubUser())
 
 //function to fetch and display a random joke
 async function fetchRandomJoke() {
@@ -296,8 +292,7 @@ async function fetchRandomJoke() {
         if (jokeOutput) jokeOutput.innerHTML = 'Unable to load random joke. See console for details.';
     }
 }
-// Wire the joke button to the function
-if (jokeApi) jokeApi.addEventListener('click', fetchRandomJoke);    
+// (joke button uses inline onclick -> getJoke())
 
 // Fetch and display a Meowfact (integrates with Meowfacts API)
 async function fetchMeowFact() {
@@ -373,8 +368,7 @@ async function fetchMeowFact() {
     }
 }
 
-// Wire the Meowfacts button to the Meowfact function
-if (meowApi) meowApi.addEventListener('click', fetchMeowFact);
+// (meowfacts button uses inline onclick -> getMeowFactsInfo())
 // Inline wrapper used by index.html
 function getMeowFactsInfo() { fetchMeowFact(); }
 
